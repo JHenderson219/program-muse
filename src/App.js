@@ -7,6 +7,12 @@ import config from './config.js';
     // Expansion: Live search
 // TODO: Video player iframe view component
 // TODO: Redux-ish store class
+// TODO: Queue feature
+// TODO: Autoplay on return feature
+// TODO: Sorting videos by some criteria - popularity?
+// TODO: Giphy Integration
+// TODO: pre-selected genres, with a random giphy, in random order
+// TODO: clicking a giphy goes and gets / plays a youtube video, and queues up other top results, with that genre of music
 class Store {
   constructor() {
     this.props = {};
