@@ -21,6 +21,7 @@ class Store {
     if (!queryParams.part) queryParams.part = 'snippet';
     if (!queryParams.maxResults) queryParams.maxResults = 20;
     if (!queryParams.key) queryParams.key = config.YT_DATA_KEY;
+    
     let entries = Object.entries(queryParams);
     console.log(entries)
     let out = entries.reduce((acc, pair) => {
@@ -82,20 +83,18 @@ let store = new Store();
 class YTVideo extends Component {
   constructor() {
     super();
-    store.on('STATE_UPDATED', this.render);
+    store.on('STATE_UPDATED', this.updateState);
   }
-  updateStyle(key, value) {
-    this.style[key] = value;
+  updateState = (state) => {
+    console.log('updating state', state);
+    this.setState(state);
   }
-  render = (state = {}) => {
-    console.log('rendering with state:', state);
-    let src = '';
+  render = () => {
     // TODO: Get this componenet to re-render with a new src when the corresponding events fire
-    if (!state.videoId) {
-    } else {
-      src = config.YT_EMBED_URL+state.videoId
+    let src='';
+    if (this.state && this.state.videoId) {
+      src = config.YT_EMBED_URL+this.state.videoId
     }
-    src = config.YT_EMBED_URL+'THRfmv__bx8';
     return (
       <iframe title='selectedVideo' src={src}></iframe>
     );
