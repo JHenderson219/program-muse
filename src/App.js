@@ -1,108 +1,47 @@
 import React, { Component } from 'react';
 import './App.css';
 import config from './config.js';
-
-// TODO: Search bar view component w/ search action, on response triggers playVideo action
-    // Expansion: Additional search params
-    // Expansion: Live search
-// TODO: Video player iframe view component
-// TODO: Redux-ish store class
+import Store  from './store';
+import YouTube from 'react-youtube';
+// TODO: Autoplay youtube videos on return
 // TODO: Queue feature
 // TODO: Autoplay on return feature
 // TODO: Sorting videos by some criteria - popularity?
 // TODO: Giphy Integration
 // TODO: pre-selected genres, with a random giphy, in random order
 // TODO: clicking a giphy goes and gets / plays a youtube video, and queues up other top results, with that genre of music
-class Store {
-  constructor() {
-    this.props = {};
-    this.props.url = config.YT_DATA_URL;
-    this.state = {};
-    this.listeners = new Map();
-  }
-  getBaseURL() {
-    return this.props.url;
-  }
-  serializeParams(queryParams = {}) {
-    if (!queryParams.part) queryParams.part = 'snippet';
-    if (!queryParams.maxResults) queryParams.maxResults = 20;
-    if (!queryParams.key) queryParams.key = config.YT_DATA_KEY;
-    
-    let entries = Object.entries(queryParams);
-    console.log(entries)
-    let out = entries.reduce((acc, pair) => {
-      return acc+pair.reduce((key, value) => `&${key}=${value}`);
-      }, '');
-    return out;
-  }
-  getFetchURL(query) {
-    let params = this.serializeParams(query);
-    console.log('fetch url', this.getBaseURL()+params);
-    return this.getBaseURL()+params;
-  }
-  fetchVideos(query) {
-    let url = this.getFetchURL(query);
-    return fetch(url);
-  }
-  updateState(stateUpdates) {
-    Object.entries(stateUpdates).forEach(element => {
-      this.state[element[0]] = element[1];
-    });
-    this.trigger('STATE_UPDATED', this.state);
-  }
-  dispatch(action) {
-    switch(action.type) {
-      case 'VIDEO_SEARCH':
-        this.fetchVideos({q: this.state.search})
-            .then(resp => resp.json()
-            .then(json => {
-              let videoId = this.selectVideoId(json.items);
-              this.updateState({videoId});
-            }));
-        break;
-      case 'UPDATE_SEARCH':
-        this.updateState({search: action.search});
-        break;
-      default:
-        console.warn(`No action handler for ${action}`);
-        break;
-    }
-  }
-  selectVideoId(videos) {
-    let selection = videos[Math.floor(Math.random()*20)].id.videoId;
-    console.log(selection);
-    return selection;
-  }
-  trigger(event, params) {
-    if (this.listeners.has(event)) {
-      this.listeners.get(event).forEach(callback => callback(params));
-    }
-  }
-  on(event, callback) {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
-    }
-    this.listeners.get(event).push(callback);
-  }
-}
+
 let store = new Store();
 class YTVideo extends Component {
   constructor() {
     super();
+    this.state = {};
     store.on('STATE_UPDATED', this.updateState);
   }
   updateState = (state) => {
     console.log('updating state', state);
     this.setState(state);
   }
-  render = () => {
-    // TODO: Get this componenet to re-render with a new src when the corresponding events fire
-    let src='';
-    if (this.state && this.state.videoId) {
-      src = config.YT_EMBED_URL+this.state.videoId
+  getDefaultOpts() {
+    return {
+      height: '100',
+      width: '100',
+      playerVars: {
+        autoPlay: 1
+      }
     }
+  }
+  onStateChange = (event) => {
+    console.log('state changed', event);
+    if (event.data === 5) {
+      event.target.playVideo();
+    }
+    
+  }
+  render = () => {
+    console.log(this.state);
     return (
-      <iframe title='selectedVideo' src={src}></iframe>
+      <YouTube onStateChange={this.onStateChange} videoId={this.state.videoId || ''} opts={this.state.opts || this.getDefaultOpts()}></YouTube>
     );
   }
 }
