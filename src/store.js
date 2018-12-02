@@ -4,15 +4,18 @@ import { createStore } from 'redux';
 
 import programMuse from './reducers';
 
+// import { loadTracks } from './actions';
+
 const initialState = {
   tracks: [
-    {name: 'test', id: 'someValue'},
-    {name: 'foo', id: 'bar'}
+    {name: 'synthwave', q: 'synthwave'},
+    {name: 'vaporwave', q: 'vaporwave'},
+    {name: 'kawaii future bass', q: 'kawaii future bass'},
   ]
 };
 
 const store = createStore(programMuse, initialState);
-console.log(store, initialState);
+
 export default store;
 // class Store {
 //   constructor() {

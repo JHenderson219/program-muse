@@ -6,4 +6,6 @@ const mapStateToProps = (state, ownProps) => {
   return state;
 }
 
-export default connect(mapStateToProps)(Tracks);
+const TrackContainer = connect(mapStateToProps)(Tracks);
+
+export default TrackContainer;
